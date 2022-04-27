@@ -1,6 +1,29 @@
 const credentials = require('./config');
-const { login, fetchUserVideoInfos, downloadVideo } = require('./msstreams-utils');
+const { login, fetchChannelVideoInfos, fetchUserVideoInfos, getChannels, downloadVideo } = require('./msstreams-utils');
 const { ensureDirExists, fileExists, readJsonFromFile, writeJsonToFile } = require('./file-utils');
+
+async function processChannel(token, channelUuid) {
+    // paths
+    const channelDir = `./output/channels`;
+    const videoInfosPath = `${channelDir}/${channelUuid}.json`;
+
+    // create user dir if needed
+    await ensureDirExists(channelDir);
+
+    // fetch video infos if needed
+    let videoInfos;
+    if (fileExists(videoInfosPath)) {
+        console.log('* Reading videos.json');
+        videoInfos = readJsonFromFile(videoInfosPath);
+    } else {
+        // get the channel's video info
+        console.log('* Fetch videos info');
+        videoInfos = await fetchChannelVideoInfos(channelUuid, token);
+
+        console.log('* Writing to videos.json');
+        writeJsonToFile(videoInfosPath, videoInfos);
+    }
+}
 
 async function processUser(token, userUuid) {
     // paths
@@ -56,6 +79,7 @@ const main = async () => {
     const account = process.env.TEST_ACCOUNT || credentials.account;
     const pwd = process.env.TEST_PWD || credentials.pwd;
     const userUuids = credentials.userUuids;
+    const channelUuids = credentials.channelUuids;
 
     // get the account token
     console.log(`** Get account token for ${account} **`);
@@ -72,6 +96,16 @@ const main = async () => {
         await processUser(token, userUuid);
 
         console.log(`** Done processing user ${userUuid} **`);
+        console.log();
+    }
+
+    // process all channels
+    for (const channelUuid of channelUuids) {
+        console.log(`** Processing channel ${channelUuid} **`);
+
+        await processChannel(token, channelUuid);
+
+        console.log(`** Done processing channel ${channelUuid} **`);
         console.log();
     }
 }
