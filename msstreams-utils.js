@@ -378,7 +378,11 @@ async function fetchChannelVideoInfos(channelUuid, token) {
     let vids = [];
     let channelVideos = await fetchChannelVideosInfo(channelUuid, token, 100, offset);
 
-    let len = channelVideos.length;
+    let len = 0; // handle the case where there are no videos in the channel
+    if (channelVideos) {
+      len = channelVideos.length;
+    }
+
     while (len > 0) {
       vids = vids.concat(channelVideos);
       offset += len;
