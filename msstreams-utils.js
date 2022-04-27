@@ -336,9 +336,9 @@ const exportStep = async (uuid, token) => {
 }
 
 // This function generates a list of URLs so you can download a user's reports
-const getExports = async(token, context, start, skip) => {
+const getExports = async(token, tenant, context, start, skip) => {
     return new Promise((resolve, reject) => {
-        const url = 'https://uswe-1.api.microsoftstream.com/api/tenants/3424075b-a606-40ad-a3cb-e69d926aa9bc/dataExports?$top=' + start + '&$skip=' + skip + '&$orderby=requestedTime%20desc&api-version=1.4-private';
+        const url = 'https://uswe-1.api.microsoftstream.com/api/tenants/' + tenant + '/dataExports?$top=' + start + '&$skip=' + skip + '&$orderby=requestedTime%20desc&api-version=1.4-private';
         const headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization": "Bearer " + token.accessToken
