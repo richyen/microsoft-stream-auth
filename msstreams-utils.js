@@ -242,11 +242,11 @@ const getAccessToken = async(context) => {
     });
 }
 
-// TODO: This function retrieves all the channels for the account
-const getChannels  = async(token, limit, offset) => {
+// This function retrieves all the channels for the account
+const getChannelsHelper = async(token, limit, offset) => {
     return new Promise((resolve, reject) => {
         console.log('* Fetching all channels');
-        const url = 'https://uswe-1.api.microsoftstream.com/api/channels?adminmode=true&$top=' + limit + '&$skip=' + offset + '$orderby=metrics%2Ffollows%20desc&$expand=creator,group&$filter=isDefault%20eq%20false&api-version=1.4-private';
+        const url = 'https://uswe-1.api.microsoftstream.com/api/channels?adminmode=true&$top=' + limit + '&$skip=' + offset + '&$orderby=metrics%2Ffollows%20desc&$expand=creator,group&$filter=isDefault%20eq%20false&api-version=1.4-private';
         const headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "Authorization": "Bearer " + token.accessToken
@@ -257,6 +257,33 @@ const getChannels  = async(token, limit, offset) => {
         });
     });
 }
+
+async function getChannels(token) {
+    console.log(`* Get all channels`);
+    let offset = 0;
+    let channelArray = [];
+    let channelBatch = await getChannelsHelper(token, 100, offset);
+
+    let len = 0; // handle the case where there are no videos in the channel
+    if (channelBatch) {
+      len = channelBatch.length;
+    }
+
+    while (len > 0) {
+      channelArray = channelArray.concat(channelBatch);
+      offset += len;
+      channelBatch = await getChannelsHelper(token, 100, offset);
+      len = 0;
+      if (channelBatch) {
+        len = channelBatch.length;
+      }
+    }
+    console.log("Found " + channelArray.length + " channels");
+
+    console.log('* Fetched channels');
+    return channelArray;
+
+};
 
 // This function resolves to an array of metadata for all the videos associated with a channel
 const fetchChannelVideosInfo  = async(uuid, token, limit, offset) => {

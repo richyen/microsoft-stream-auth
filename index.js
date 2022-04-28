@@ -79,7 +79,6 @@ const main = async () => {
     const account = process.env.TEST_ACCOUNT || credentials.account;
     const pwd = process.env.TEST_PWD || credentials.pwd;
     const userUuids = credentials.userUuids;
-    const channelUuids = credentials.channelUuids;
 
     // get the account token
     console.log(`** Get account token for ${account} **`);
@@ -100,12 +99,13 @@ const main = async () => {
     }
 
     // process all channels
-    for (const channelUuid of channelUuids) {
-        console.log(`** Processing channel ${channelUuid} **`);
+    const channels = await getChannels(token);
+    for (const channel of channels) {
+        console.log(`** Processing channel ${channel.id} **`);
 
-        await processChannel(token, channelUuid);
+        await processChannel(token, channel.id);
 
-        console.log(`** Done processing channel ${channelUuid} **`);
+        console.log(`** Done processing channel ${channel.id} **`);
         console.log();
     }
 }
