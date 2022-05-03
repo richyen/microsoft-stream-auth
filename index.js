@@ -100,6 +100,7 @@ const main = async () => {
 
     // process all channels
     const channels = await getChannels(token);
+    writeJsonToFile('./output/channels.json', channels);
     for (const channel of channels) {
         console.log(`** Processing channel ${channel.id} **`);
 
