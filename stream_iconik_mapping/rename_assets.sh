@@ -9,6 +9,7 @@ asset_ids=`cat ${collection_info} | jq '.objects[] | .id' | sed 's/"//g'`
 
 for asset in ${asset_ids}; do
   old_title=`cat ${collection_info} | jq ".objects[] | select(.id==\"${asset}\").title"`
+  old_title_no_quotes=`echo ${old_title} | sed 's/"//g'`
   title_no_uuid=`echo ${old_title} | cut -f 6- -d"-" | cut -f1 -d'"'`
   title_no_trailing=`echo ${title_no_uuid} | sed "s/-.mp4/.mp4/"`
   new_title=`echo ${title_no_trailing} | sed "s/-/_/g"`
@@ -16,6 +17,17 @@ for asset in ${asset_ids}; do
   # Skip csv files (metadata files created during the export to assist with mapping)
   if [[ ${old_title} == '"channel_metadata.csv"' ]]; then
     continue
+  fi
+
+  # If resulting title is empty, make a note of it and skip
+  if [[ ${new_title} == '' ]]; then
+    echo "############## Failed to rename ${asset}"
+    new_title=$old_title_no_quotes
+  fi
+
+  if [[ ${new_title} == ' ' ]]; then
+    echo "============== Failed to rename ${asset}"
+    new_title=$old_title_no_quotes
   fi
 
   # Do the rename
