@@ -377,6 +377,36 @@ const getExports = async(token, tenant, context, start, skip) => {
     });
 }
 
+// This function deletes a video
+const deleteVideo = async(token, uuid) => {
+    return new Promise((resolve, reject) => {
+        const url = 'https://uswe-1.api.microsoftstream.com/api/videos/' + uuid + '?adminmode=true&api-version=1.4-private';
+        const headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer " + token.accessToken
+        };
+        request.delete({ url: url, headers: headers}, (err, res, body) => {
+            resolve({});
+            console.log(body);
+        });
+    });
+}
+
+// This function removes a video from the recycle bin
+const removeVideo = async(token, uuid) => {
+    return new Promise((resolve, reject) => {
+        const url = 'https://uswe-1.api.microsoftstream.com/api/deletedvideos/' + uuid + '?adminmode=true&api-version=1.4-private';
+        const headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer " + token.accessToken
+        };
+        request.delete({ url: url, headers: headers}, (err, res, body) => {
+            resolve({});
+            console.log(body);
+        });
+    });
+}
+
 async function microsoftStreamAuth(credentials) {
 
     // Do all the heavy lifting of getting an Access Token
@@ -464,4 +494,6 @@ exports = module.exports = {
     fetchChannelVideoInfos,
     getChannels,
     downloadVideo,
+    deleteVideo,
+    removeVideo,
 };
