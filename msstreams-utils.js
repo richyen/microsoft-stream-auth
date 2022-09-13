@@ -342,25 +342,6 @@ const downloadVideo = async (videoInfo, token, filePath) => {
     await downloadFile(videoInfo.downloadUrl, headers, filePath);
 };
 
-// This function restores a video that is in the Recycle Bin
-const restoreVideo = async (uuid, token) => {
-    return new Promise((resolve, reject) => {
-        const url = 'https://uswe-1.api.microsoftstream.com/api/deletedvideos/' + uuid + '/restore?adminmode=true&api-version=1.4-private';
-        const data = {
-            "aadState": "active",
-            "type": "User"
-        };
-        const head = {
-            "Content-Type": "application/json;charset=UTF-8",
-            "Authorization": "Bearer " + token.accessToken
-        };
-        request.post({ url: url, headers: head, form: data }, (err, res, body) => {
-            resolve({ });
-            console.log(body);
-        });
-    });
-}
-
 // This exportStep function just tells MS Stream to generate a report -- there is no response that's human-usable
 // Takes in a user's UUID and tells MS Stream to generate a report
 const exportStep = async (uuid, token) => {
@@ -406,6 +387,25 @@ const deleteVideo = async(token, uuid) => {
         };
         request.delete({ url: url, headers: headers}, (err, res, body) => {
             resolve({});
+            console.log(body);
+        });
+    });
+}
+
+// This function restores a video that is in the Recycle Bin
+const restoreVideo = async (token, uuid) => {
+    return new Promise((resolve, reject) => {
+        const url = 'https://uswe-1.api.microsoftstream.com/api/deletedvideos/' + uuid + '/restore?adminmode=true&api-version=1.4-private';
+        const data = {
+            "aadState": "active",
+            "type": "User"
+        };
+        const head = {
+            "Content-Type": "application/json;charset=UTF-8",
+            "Authorization": "Bearer " + token.accessToken
+        };
+        request.post({ url: url, headers: head, form: data }, (err, res, body) => {
+            resolve({ });
             console.log(body);
         });
     });
