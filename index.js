@@ -1,5 +1,5 @@
 const credentials = require('./config');
-const { login, deleteVideo, removeVideo, fetchChannelVideoInfos, fetchUserVideoInfos, getChannels, downloadVideo } = require('./msstreams-utils');
+const { login, restoreVideo, deleteVideo, removeVideo, fetchChannelVideoInfos, fetchUserVideoInfos, getChannels, downloadVideo } = require('./msstreams-utils');
 const { ensureDirExists, fileExists, readJsonFromFile, writeJsonToFile } = require('./file-utils');
 
 async function processChannel(token, channelUuid) {
